@@ -340,7 +340,7 @@ $temp_array_total[] = array(
   "sum_outstanding" => $value->outstanding,
   "sum_angsuran_pokok" => $value->angsuran_pokok,
   "sum_angsuran_bunga" => $value->angsuran_bunga,
-  "total_dana" => 0.9 * $value->angsuran_pokok ,
+  "total_dana" => bunga() * $value->angsuran_pokok ,
 //  "angsuran_sisa" => $value->angsuran_sisa,
   "batch_id" =>$value->batch_id,
 

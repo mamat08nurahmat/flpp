@@ -60,6 +60,9 @@ $autoload['packages'] = array();
 */
 $autoload['libraries'] = array('database', 'email', 'session');
 
+
+
+
 /*
 | -------------------------------------------------------------------
 |  Auto-load Drivers
@@ -81,6 +84,10 @@ $autoload['libraries'] = array('database', 'email', 'session');
 */
 $autoload['drivers'] = array();
 
+
+// $config['composer_autoload'] = "vendor/autoload.php"
+
+
 /*
 | -------------------------------------------------------------------
 |  Auto-load Helper Files
@@ -89,7 +96,7 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('url', 'file');
+$autoload['helper'] = array('url', 'file','my_helper');
 
 /*
 | -------------------------------------------------------------------

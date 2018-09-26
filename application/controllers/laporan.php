@@ -1,4 +1,13 @@
 <?php
+
+
+// require_once APPPATH . '/vendor/markrogoyski/math-php/src/Finance.php';
+// C:\xampp\htdocs\flpp\vendor\markrogoyski\math-php\src\Finance.php
+// use \Firebase\JWT\JWT;
+use MathPHP\Finance;
+
+
+
 class Laporan extends CI_Controller{
     function __construct(){
         parent::__construct();
@@ -8,8 +17,12 @@ class Laporan extends CI_Controller{
             redirect('');
         };
 */
+
+
+
         $this->load->model('model_app');
-   $this->load->helper('currency_format_helper');
+        $this->load->helper('currency_format_helper');
+        $this->load->helper('my_helper');
 
     }
 
@@ -729,6 +742,21 @@ echo 	$output;
         $this->load->view('element/v_footer');
     }
 
+//dev======
+// cari bunga di tabel parameter berdasarkan bulan dan tahun proses
+
+  public function tes_dev(){
+
+//    "batch_id" =>$value->batch_id,
+//select Bunga from Parameter where StartDate <= SYSDATE() AND EndDate >= SYSDATE();
+
+//by helper
+
+print_r(bunga());
+
+  }
+
+
     function cari_total(){
 
 $batch_id = $this->input->post('batch_id');
@@ -765,7 +793,7 @@ $temp_array_total[] = array(
   "sum_outstanding" => $value->outstanding,
   "sum_angsuran_pokok" => $value->angsuran_pokok,
   "sum_angsuran_bunga" => $value->angsuran_bunga,
-  "total_dana" => 0.9 * $value->angsuran_pokok ,
+  "total_dana" => bunga() * $value->angsuran_pokok , //---->by (bunga/100) where MONTH AND YEAR from table total
 //  "angsuran_sisa" => $value->angsuran_sisa,
   "batch_id" =>$value->batch_id,
 
@@ -1359,7 +1387,7 @@ print_r('GAGAL');
 //==============
     function export_total_v1($batch_id){
 
-	
+
 //$batch_id = $this->input->post('batch_id');
 //$id['batch_id']= $batch_id;
 //$id['batch_id']= $batch_id;
@@ -1390,7 +1418,7 @@ $temp_array_total[] = array(
   "sum_outstanding" => $value->outstanding,
   "sum_angsuran_pokok" => $value->angsuran_pokok,
   "sum_angsuran_bunga" => $value->angsuran_bunga,
-  "total_dana" => 0.9 * $value->angsuran_pokok ,
+  "total_dana" => bunga() * $value->angsuran_pokok ,
   "batch_id" =>$value->batch_id,
 
 
@@ -1410,7 +1438,7 @@ $temp_array_total[] = array(
 //excel=========
 //	$this->load->model("excel_export_model");
 //	$this->load->library("excel");
-//	$object = new PHPExcel();	
+//	$object = new PHPExcel();
 //excel=========
 $tabel ='';
 $tabel .='<table class="table table-bordered table-striped">';
@@ -1467,7 +1495,7 @@ $sum_estimasi_angsuran_tarif1 +=round($row['sum_angsuran_bunga'],9);
 	$sum_estimasi_angsuran_tarif ="Rp. ".number_format($sum_estimasi_angsuran_tarif1,0,',','.');
 
 //tr looping
-$tabel .='	
+$tabel .='
 	<tr class="gradeX">
 	<td>'.$no.'</td>
 	<td>'.$row['tahun'].'</td>
@@ -1476,15 +1504,15 @@ $tabel .='
 	<td>'.$angsuran_pokok.'</td>
 	<td>'.$estimasi_angsuran_tarif.'</td>
 	<td>'.$sisa_pokok.'</td>
-   </tr>	
+   </tr>
 ';
 
 
 $no++;
     }
-	
+
 $tabel .='
-   
+
 	<tr>
 	<td colspan="4">TOTAL</td>
 	<td>'.$sum_angsuran_pokok.'</td>
@@ -1505,7 +1533,7 @@ $tabel .='</tbody>';
 $tabel .='<tbody">';
 
 foreach($temp_array_total as  $row ){
-$tabel .='	
+$tabel .='
 	<tr class="gradeX">
 	<td>'.$row['tahun'].'</td>
 	<td>'.$row['tahun'].'</td>
@@ -1514,12 +1542,12 @@ $tabel .='
 	<td>'.$row['tahun'].'</td>
 	<td>'.$row['tahun'].'</td>
 	<td>'.$row['tahun'].'</td>
-   </tr>	
+   </tr>
 ';
 }
 
 $tabel .='
-   
+
 	<tr>
 	<td colspan="4">TOTAL</td>
 	<td>1312323123</td>
@@ -1549,14 +1577,14 @@ echo $tabel;
 //	header('Content-Disposition: attachment;filename="TOTAL_FLPP_BATCH_'.$batch_id.'.xls"');
 //	$object_writer->save('php://output');
     }
-	
+
 
 //===============
 
 
     function export_total($batch_id){
 
-	
+
 //$batch_id = $this->input->post('batch_id');
 //$id['batch_id']= $batch_id;
 //$id['batch_id']= $batch_id;
@@ -1587,7 +1615,7 @@ $temp_array_total[] = array(
   "sum_outstanding" => $value->outstanding,
   "sum_angsuran_pokok" => $value->angsuran_pokok,
   "sum_angsuran_bunga" => $value->angsuran_bunga,
-  "total_dana" => 0.9 * $value->angsuran_pokok ,
+  "total_dana" => bunga() * $value->angsuran_pokok ,
   "batch_id" =>$value->batch_id,
 
 
@@ -1607,7 +1635,7 @@ $temp_array_total[] = array(
 //excel=========
 //	$this->load->model("excel_export_model");
 //	$this->load->library("excel");
-//	$object = new PHPExcel();	
+//	$object = new PHPExcel();
 //excel=========
 $tabel ='';
 $tabel .='<table class="table table-bordered table-striped">';
@@ -1664,7 +1692,7 @@ $sum_estimasi_angsuran_tarif1 +=round($row['sum_angsuran_bunga'],9);
 	$sum_estimasi_angsuran_tarif =$sum_estimasi_angsuran_tarif1;
 
 //tr looping
-$tabel .='	
+$tabel .='
 	<tr class="gradeX">
 	<td>'.$no.'</td>
 	<td>'.$row['tahun'].'</td>
@@ -1673,15 +1701,15 @@ $tabel .='
 	<td>'.$angsuran_pokok.'</td>
 	<td>'.$estimasi_angsuran_tarif.'</td>
 	<td>'.$sisa_pokok.'</td>
-   </tr>	
+   </tr>
 ';
 
 
 $no++;
     }
-	
+
 $tabel .='
-   
+
 	<tr>
 	<td colspan="4">TOTAL</td>
 	<td>'.$sum_angsuran_pokok.'</td>
@@ -1702,7 +1730,7 @@ $tabel .='</tbody>';
 $tabel .='<tbody">';
 
 foreach($temp_array_total as  $row ){
-$tabel .='	
+$tabel .='
 	<tr class="gradeX">
 	<td>'.$row['tahun'].'</td>
 	<td>'.$row['tahun'].'</td>
@@ -1711,12 +1739,12 @@ $tabel .='
 	<td>'.$row['tahun'].'</td>
 	<td>'.$row['tahun'].'</td>
 	<td>'.$row['tahun'].'</td>
-   </tr>	
+   </tr>
 ';
 }
 
 $tabel .='
-   
+
 	<tr>
 	<td colspan="4">TOTAL</td>
 	<td>1312323123</td>
@@ -1746,11 +1774,11 @@ echo $tabel;
 //	header('Content-Disposition: attachment;filename="TOTAL_FLPP_BATCH_'.$batch_id.'.xls"');
 //	$object_writer->save('php://output');
     }
-	
+
 //	function excel($batch_id){
 	function excel(){
 
-	
+
 $batch_id = $this->input->post('batch_id');
 $id['batch_id']= $batch_id;
 //$id['batch_id']= $batch_id;
@@ -1781,7 +1809,7 @@ $temp_array_total[] = array(
   "sum_outstanding" => $value->outstanding,
   "sum_angsuran_pokok" => $value->angsuran_pokok,
   "sum_angsuran_bunga" => $value->angsuran_bunga,
-  "total_dana" => 0.9 * $value->angsuran_pokok ,
+  "total_dana" => bunga() * $value->angsuran_pokok ,
   "batch_id" =>$value->batch_id,
 
 
@@ -1793,23 +1821,111 @@ $temp_array_total[] = array(
 
 
 //print_r($temp_array_total);die();
-	
+
 //	$object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
 	header('Content-Type: application/vnd.ms-excel');
 	header('Content-Disposition: attachment;filename="TOTAL_FLPP.xls"');
 	//$object_writer->save('php://output');
 $data['data_generate'] = $temp_array_total;
 
-	
 
 
-		
+
+
         $this->load->view('v_export_excel',$data);
 		//?????????
 
-	
-	
+
+
 	}
 
+
+
+    public function dev_detail(){
+/*
+// Financial payment for a loan or annuity with compound interest
+$rate          = 0.005 / 12; // 3.5% interest paid at the end of every month
+$periods       = (222/12) * 12;    // 30-year mortgage
+$present_value = -128000000;     // Mortgage note of $265,000.00
+$future_value  = 0;
+$beginning     = false;      // Adjust the payment to the beginning or end of the period
+$pmt           = Finance::pmt($rate, $periods, $present_value, $future_value, $beginning);
+
+// Interest on a financial payment for a loan or annuity with compound interest.
+$period = 5; // First payment period
+$ipmt   = Finance::ipmt($rate, $period, $periods, $present_value, $future_value, $beginning);
+
+print_r($ipmt);
+
+die();        
+*/
+        // $time_sekarang = time();
+        // echo date("d F Y", strtotime("+5 days", $time_sekarang));
+        // $date = '25/05/2010';
+        // $date = str_replace('/', '-', $date);
+        // $y =  date('Y', strtotime($date));
+
+        // $m_time =   strtotime($date);
+        
+        // $m =  date('m', strtotime($date));
+        // $m1 =  date('m', strtotime("+5 months",$m_time));
+        // $y1 =  date('Y', strtotime("+5 months",$m_time));
+//         print_r($m.'-'.$y);
+//         print_r('<hr>');
+//         print_r($m1.'-'.$y1);
+// die();
+
+// $IPMT = helper_IPMT();
+// print_r($IPMT);die();
+
+
+
+
+$nama_bln=array(1=>'January','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','Nopember','Desember');
+// print_r($nama_bln[1]);
+        $tenor=120;
+        $no=1;
+        for ($x = 0; $x < $tenor; $x++){
+            $no=$x+1;
+
+
+            $date = '25/05/2010';
+            $date = str_replace('/', '-', $date);
+            $y =  date('Y', strtotime($date));
+    
+            $m_time =   strtotime($date);
+    
+
+            $m1 =  date('m', strtotime("+".$no." months",$m_time));
+            $y1 =  date('Y', strtotime("+".$no." months",$m_time));
+    
+
+            // print_r('X :'.$x.'NO :'.$no);
+            print_r('<hr>');
+            print_r('NO : '.$no.'-->'.$m1.'-'.$y1);
+            // print_r($nama_bln[$m1].'-'.$y1);
+
+            // print_r(date('m', strtotime("+".$no." months",$m_time)));
+
+            print_r('<hr>');
+
+            $rate          = 0.005 / 12; // 3.5% interest paid at the end of every month
+            $periods       = (222/12) * 12;    // 30-year mortgage
+            $present_value = -128000000;     // Mortgage note of $265,000.00
+            $future_value  = 0;
+            $beginning     = false;      // Adjust the payment to the beginning or end of the period
+            $pmt           = Finance::pmt($rate, $periods, $present_value, $future_value, $beginning);
+            
+            // Interest on a financial payment for a loan or annuity with compound interest.
+            $period = $no; // First payment period
+            $ipmt   = Finance::ipmt($rate, $period, $periods, $present_value, $future_value, $beginning);
+            
+            print_r(round($ipmt,0));
+            print_r('<hr>');
+
+
+        }
+
+    }
 
 }
