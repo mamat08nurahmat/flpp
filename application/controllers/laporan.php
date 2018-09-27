@@ -1878,11 +1878,52 @@ die();
 // $IPMT = helper_IPMT();
 // print_r($IPMT);die();
 
+// helper_nama_bulan('08');
+// print_r(helper_nama_bulan('08'));die();
+
+$tabel='';
+$tabel.='<table class="paleBlueRows">';
+$tabel.='
+
+<thead>
+<tr >
+<th colspan="3">NAMA NASABAH</th>
+</tr>
+</thead>
+';
+
+$tabel.='<thead>';
+$tabel.='<td>NO</td>';
+$tabel.='<td>BULAN_TAHUN</td>';
+$tabel.='<td>PPMT(POKOK)</td>';
+$tabel.='<td>IPMT(BUNGA)</td>';
+$tabel.='</thead>';
+
+
+$tabel.='<tbody>';
 
 
 
-$nama_bln=array(1=>'January','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','Nopember','Desember');
-// print_r($nama_bln[1]);
+
+// $nama_bln=array(1=>'January','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','Nopember','Desember');
+
+// $nama_bulan = array(
+
+//     '01'=>'Januari',
+//     '02'=>'Februari',
+//     '03'=>'Maret',
+//     '04'=>'April',
+//     '05'=>'Mei',
+//     '06'=>'Juni',
+//     '07'=>'Juli',
+//     '08'=>'Agustus',
+//     '09'=>'September',
+//     '10'=>'Oktober',
+//     '11'=>'November',
+//     '12'=>'Desember'
+
+// );
+// print_r($nama_bulan[04]);die();
         $tenor=120;
         $no=1;
         for ($x = 0; $x < $tenor; $x++){
@@ -1896,36 +1937,359 @@ $nama_bln=array(1=>'January','Februari','Maret','April','Mei','Juni','Juli','Agu
             $m_time =   strtotime($date);
     
 
-            $m1 =  date('m', strtotime("+".$no." months",$m_time));
+            $m2 =  date('m', strtotime("+".$no." months",$m_time));
+            $m1 = (string)$m2;            
+            // $m1 = '$m1';
             $y1 =  date('Y', strtotime("+".$no." months",$m_time));
     
 
             // print_r('X :'.$x.'NO :'.$no);
-            print_r('<hr>');
-            print_r('NO : '.$no.'-->'.$m1.'-'.$y1);
+                // print_r('<hr>');
+                // print_r('NO : '.$no.'-->'.$m1.'-'.$y1);
             // print_r($nama_bln[$m1].'-'.$y1);
 
             // print_r(date('m', strtotime("+".$no." months",$m_time)));
 
-            print_r('<hr>');
-
+                // print_r('<hr>');
+//------------------------PPMT(POKOK) & IPMT (BUNGA)
             $rate          = 0.005 / 12; // 3.5% interest paid at the end of every month
             $periods       = (222/12) * 12;    // 30-year mortgage
-            $present_value = -128000000;     // Mortgage note of $265,000.00
+
+            $present_value_ipmt = -128000000; //IPMT    // Mortgage note of $265,000.00
+            $present_value_ppmt = -115200000; //IPMT    // Mortgage note of $265,000.00
+            
             $future_value  = 0;
             $beginning     = false;      // Adjust the payment to the beginning or end of the period
-            $pmt           = Finance::pmt($rate, $periods, $present_value, $future_value, $beginning);
+            // $pmt           = Finance::pmt($rate, $periods, $present_value, $future_value, $beginning);
             
             // Interest on a financial payment for a loan or annuity with compound interest.
             $period = $no; // First payment period
-            $ipmt   = Finance::ipmt($rate, $period, $periods, $present_value, $future_value, $beginning);
-            
-            print_r(round($ipmt,0));
-            print_r('<hr>');
+            $ipmt   = Finance::ipmt($rate, $period, $periods, $present_value_ipmt, $future_value, $beginning);
+            $ipmt = round($ipmt,0);
+// Principle on a financial payment for a loan or annuity with compound interest
 
+// $present_value = -115200000; //PPMT
+            $ppmt = Finance::ppmt($rate, $period, $periods, $present_value_ppmt, $future_value = 0, $beginning);            
+            $ppmt = round($ppmt,0);
+//------------------------
+            
+            // print_r(round($ipmt,0));
+            // print_r('<hr>');
+
+
+            $tabel.='<tr>';
+            $tabel.='<td>'.$no.'</td>';
+            $tabel.='<td>'.$y1.' - '.helper_nama_bulan("$m1").'</td>';
+
+            $tabel.='<td>'.currency_format($ppmt).'</td>';
+            
+
+            $tabel.='<td>'.currency_format($ipmt).'</td>';
+            $tabel.='</tr>';
+            
 
         }
 
+        $tabel.='</tbody>';
+        $tabel.='</table>';
+        
+
+        echo $tabel;
+        
+
     }
+
+    public function bunga(){
+
+        $data=array(
+            'title'=>'Laporan Bunga',
+//            'active_dashboard'=>'active',
+//            'data_upload'=>$this->model_app->getAllData('upload_verivikasi'),
+            //   'data_upload'=>$this->db->query("SELECT distinct batch_id FROM upload_verivikasi")->result(),
+        );
+
+        $this->load->view('element/v_header',$data);
+        $this->load->view('pages/v_laporan_bunga_detail');
+        $this->load->view('element/v_footer');
+    }
+
+
+    public function tes_result(){
+
+        echo'XXXXXXXXXXXXXX';
+
+    }
+
+
+    //devvvv
+
+function dev_get_detail_id($no_ktp_pemohon,$batch_id){
+//print_r($no_ktp_pemohon);die();
+
+     $id['no_ktp_pemohon']=$no_ktp_pemohon;
+     $id['batch_id']=$batch_id;     
+     $detail_data = $this->model_app->getSelectedData('upload_verivikasi',$id)->result();
+
+// print_r($detail_data);die();
+
+$BatchID= $detail_data[0]->batch_id;
+
+$nama_pemohon= $detail_data[0]->NAMA_PEMOHON;
+$no_ktp_pemohon1 = $detail_data[0]->NO_KTP_PEMOHON;
+
+$tenor= $detail_data[0]->TENOR;
+$nilai_flpp= $detail_data[0]->NILAI_FLPP;
+$nilai_kpr= $detail_data[0]->NILAI_KPR;
+
+// $detail_data = $this->model_app->getSelectedData('upload_verivikasi',$id)->result();
+//============
+//$tenor =10;
+$tenor =$detail_data[0]->TENOR; //tenor
+
+$nama_pemohon =$detail_data[0]->NAMA_PEMOHON; //nama_pemohon
+$nilai_kpr =$detail_data[0]->NILAI_KPR; //nama_pemohon
+$tgl_akad =$detail_data[0]->TGL_AKAD; //tgl_akad
+
+
+
+$bunga_kpr =$detail_data[0]->SUKU_BUNGA_KPR; //bunga
+// print_r($bunga_kpr);die();
+//$bunga = $bunga2 /100;
+// $bunga = $bunga2 ;
+
+/*
+$tabel='';
+$tabel.='<table class="paleBlueRows">';
+$tabel.='
+
+<thead>
+<tr >
+<th colspan="3">'.$nama_pemohon.'</th>
+</tr>
+</thead>
+';
+
+$tabel.='<thead>';
+$tabel.='<td>NO</td>';
+$tabel.='<td>BULAN_TAHUN</td>';
+$tabel.='<td>PPMT(POKOK)</td>';
+$tabel.='<td>IPMT(BUNGA)</td>';
+$tabel.='</thead>';
+
+
+$tabel.='<tbody>';
+*/
+
+
+
+        $tenor=120;
+        $no=1;
+        for ($x = 0; $x < $tenor; $x++){
+            $no=$x+1;
+
+
+            // $date = '25/05/2010';
+            // $date = str_replace('/', '-', $date);
+            // $y =  date('Y', strtotime($date));
+    
+            // $m_time =   strtotime($date);
+
+            $y =  date('Y', strtotime($tgl_akad));
+            $m_time =   strtotime($tgl_akad);
+
+
+            $m2 =  date('m', strtotime("+".$no." months",$m_time));
+            $m1 = (string)$m2;            
+            // $m1 = '$m1';
+            $y1 =  date('Y', strtotime("+".$no." months",$m_time));
+    
+
+            // print_r('X :'.$x.'NO :'.$no);
+                // print_r('<hr>');
+                // print_r('NO : '.$no.'-->'.$m1.'-'.$y1);
+            // print_r($nama_bln[$m1].'-'.$y1);
+
+            // print_r(date('m', strtotime("+".$no." months",$m_time)));
+
+                // print_r('<hr>');
+//------------------------PPMT(POKOK) & IPMT (BUNGA)
+            // $rate          = 0.005 / 12; // 3.5% interest paid at the end of every month
+            // $periods       = (222/12) * 12;    // 30-year mortgage
+
+            // $present_value_ipmt = -128000000; //IPMT    // Mortgage note of $265,000.00
+            // $present_value_ppmt = -115200000; //IPMT    // Mortgage note of $265,000.00
+
+
+            $rate          = ($bunga_kpr/100) / 12; // 3.5% interest paid at the end of every month
+            $periods       = ($tenor/12) * 12;    // 30-year mortgage
+
+            $present_value_ipmt = -1 * abs($nilai_kpr); //IPMT NILAI_KPR    // Mortgage note of $265,000.00
+            $present_value_ppmt = -1 * abs($nilai_flpp); //PPMT NILAI_FLPP    // Mortgage note of $265,000.00
+
+            
+            $future_value  = 0;
+            $beginning     = false;      // Adjust the payment to the beginning or end of the period
+            // $pmt           = Finance::pmt($rate, $periods, $present_value, $future_value, $beginning);
+            
+            // Interest on a financial payment for a loan or annuity with compound interest.
+            $period = $no; // First payment period
+            $ipmt   = Finance::ipmt($rate, $period, $periods, $present_value_ipmt, $future_value, $beginning);
+            $ipmt = round($ipmt,0);
+// Principle on a financial payment for a loan or annuity with compound interest
+
+// $present_value = -115200000; //PPMT
+            $ppmt = Finance::ppmt($rate, $period, $periods, $present_value_ppmt, $future_value = 0, $beginning);            
+            $ppmt = round($ppmt,0);
+//------------------------
+            
+            // print_r(round($ipmt,0));
+            // print_r('<hr>');
+
+$data_array[] = array(
+
+    'BatchID' => $BatchID,
+    'NO_KTP_PEMOHON' => $no_ktp_pemohon1,
+    'NO' => $no,
+    'Y' => $y1, 
+    'M' => $m1,
+    'PPMT' =>$ppmt,
+    'IPMT' =>$ipmt
+     
+
+);
+
+/*
+$tabel.='<tr>';
+$tabel.='<td>'.$no.'</td>';
+$tabel.='<td>'.$y1.' - '.helper_nama_bulan("$m1").'</td>';
+
+$tabel.='<td>'.currency_format($ppmt).'</td>';
+$tabel.='<td>'.currency_format($ipmt).'</td>';
+
+$tabel.='</tr>';
+*/
+            
+
+        }
+/*
+$tabel.='</tbody>';
+$tabel.='</table>';
+*/
+
+
+//        echo $tabel;
+
+// print_r($data_array);die();
+
+$cek = $this->db->insert_batch('pengembalian', $data_array);
+
+
+// print_r($cek);die();
+if($cek){
+
+    echo "<script>window.close();</script>";
+}
+
+
+/*
+//-----
+$data=array(
+    'title'=>'Laporan',
+    //            'active_dashboard'=>'active',
+    //            'data_upload'=>$this->model_app->getAllData('upload_verivikasi'),
+    'nama_pemohon'=>$nama_pemohon,
+    'tenor'=>$tenor,
+    'nilai_flpp'=>$nilai_flpp,
+    'data_detail_id'=>$array,
+);
+$this->load->view('element/v_header',$data);
+$this->load->view('pages/v_detail_id');
+$this->load->view('element/v_footer');
+*/
+
+
+}   
+
+// generate====??/
+
+
+
+function generate2(){
+    $data=array(
+        'title'=>'Generate',
+          'data_upload_batch'=>$this->db->query("SELECT distinct batch_id FROM upload_verivikasi  ")->result(),
+
+//            'active_dashboard'=>'active',
+//            'data_upload'=>$this->model_app->getAllData('upload_verivikasi'),
+          //'data_upload'=>$this->db->query("SELECT distinct batch_id FROM upload_verivikasi")->result(),
+    );
+    $this->load->view('element/v_header',$data);
+    $this->load->view('pages/v_laporan_generate2');
+    $this->load->view('element/v_footer');
+}
+
+
+function cari_generate2(){
+
+    $batch_id = $this->input->post('batch_id');
+    //cek batch generate????
+    //$cek_batch = $this->db->query("SELECT batch_id FROM total")->result();
+    //????????????
+    $id['batch_id']= $batch_id;
+    //$id['batch_id']= $batch_id;
+    
+    $data_generate = $this->model_app->getSelectedData("upload_verivikasi",$id)->result();
+    //print_r($data_generate);die();
+    foreach($data_generate as $x){
+    
+    //$link[] =base_url("index.php/report/get_generate_id/$x->NO_KTP_PEMOHON");
+    // $link[] =base_url("index.php/laporan/get_generate_id/$x->NO_KTP_PEMOHON/$batch_id");
+    $link[] =base_url("index.php/laporan/dev_get_detail_id/$x->NO_KTP_PEMOHON/$batch_id");
+    //echo $x->NO_KTP_PEMOHON;
+    }
+    
+    // print_r($link);die();
+    $data=array(
+        'title'=>'Laporan',
+        'data_link'=>$link,
+        'data_generate'=>$data_generate,    
+    );
+    $this->load->view('element/v_header',$data);
+    $this->load->view('pages/v_cari_generate2');
+    $this->load->view('element/v_footer');
+    /*
+    */
+    
+    
+        }
+    
+
+        public function pengembalian(){
+
+            $data=array(
+                'title'=>'Laporan Pengembalian Kemenpupera',
+    //            'active_dashboard'=>'active',
+    //            'data_upload'=>$this->model_app->getAllData('upload_verivikasi'),
+                //   'data_upload'=>$this->db->query("SELECT distinct batch_id FROM upload_verivikasi")->result(),
+            );
+    
+            $this->load->view('element/v_header',$data);
+            $this->load->view('pages/v_laporan_pengembalian');
+            $this->load->view('element/v_footer');
+        }
+
+
+        public function pengembalian_detail($m,$y){
+
+            $tabel='';
+            $tabel.='';
+            $tabel.='xxxxxxxxxxxxxxxxxxxx';
+            $tabel.=$m;
+            $tabel.='xxxxxxxxxxxxxxxxxxxx';
+            $tabel.=$y;
+
+            echo $tabel;
+
+        }
 
 }
